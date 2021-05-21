@@ -116,4 +116,59 @@ class Post
         printf("Error: %s.\n", $statement->error);
         return false;
     }
+
+    public function update():bool
+    {
+        $query = "UPDATE  myblog." . $this->table ."
+        SET 
+            title = :title,
+            body = :body,
+            author = :author,
+            category_id = :category_id
+            WHERE
+              id = :id";
+
+        $statement = $this->connection->prepare($query);
+
+        $this->title = htmlspecialchars(strip_tags($this->title));
+        $this->body = htmlspecialchars(strip_tags($this->body));
+        $this->author = htmlspecialchars(strip_tags($this->author));
+        $this->category_id = htmlspecialchars(strip_tags($this->category_id));
+        $this->id = htmlspecialchars(strip_tags($this->id));
+      
+        $statement->bindParam(':title', $this->title);
+        $statement->bindParam(':body', $this->body);
+        $statement->bindParam(':author', $this->author);
+        $statement->bindParam(':category_id', $this->category_id);
+        $statement->bindParam(':id', $this->id);
+
+        if ($statement->execute()) {
+            return true;
+        }
+        # print error if something goes wrong
+        printf("Error: %s.\n", $statement->error);
+        return false;
+    }
+
+    /**
+     * Delete Post
+     *@return boolean
+     */
+    public function delete():bool
+    {
+        $query = "DELETE FROM myblog.$this->table WHERE id = :id";
+
+        $statement = $this->connection->prepare($query);
+        // Clean data
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        // Bind data
+        $statement->bindParam(':id', $this->id);
+
+        if ($statement->execute()) {
+            return true;
+        }
+        # print error if something goes wrong
+        printf("Error: %s.\n", $statement->error);
+        return false;
+    }
 }
